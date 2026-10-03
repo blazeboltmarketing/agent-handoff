@@ -1,0 +1,11 @@
+{
+  "name": "agent-handoff",
+  "owner": { "name": "blazeboltmarketing" },
+  "plugins": [
+    {
+      "name": "agent-handoff",
+      "source": "./",
+      "description": "Replace auto-compaction with a deliberate handoff: a six-line state file, a fresh session, and a hook that resumes from it."
+    }
+  ]
+}
