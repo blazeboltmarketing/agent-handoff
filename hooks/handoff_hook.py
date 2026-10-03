@@ -4,7 +4,7 @@ pipes a JSON payload with `cwd` on stdin and adds plain stdout to context).
 
 - No HANDOFF.md at the repository root: silent.
 - HANDOFF.md whose `Done when:` check exits 0: moved to
-  .handoff-archive/HANDOFF-<YYYY-MM-DD-HHMM>.md, and one line says so.
+  .handoff-archive/HANDOFF-<YYYY-MM-DD-HHMMSS>.md, and one line says so.
 - Otherwise: one line telling the agent to read it first.
 
 The `Done when:` command runs only when HANDOFF.md is NOT tracked by git, so a
@@ -75,7 +75,7 @@ def main():
               "Read it first and continue from its Next action.")
         return 0
     if done(path, root):
-        rel = os.path.join(".handoff-archive", time.strftime("HANDOFF-%Y-%m-%d-%H%M.md"))
+        rel = os.path.join(".handoff-archive", time.strftime("HANDOFF-%Y-%m-%d-%H%M%S.md"))
         try:
             os.makedirs(os.path.join(root, ".handoff-archive"), exist_ok=True)
             os.replace(path, os.path.join(root, rel))

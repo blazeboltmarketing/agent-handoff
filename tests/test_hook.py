@@ -57,7 +57,7 @@ class HookTest(unittest.TestCase):
         r = run(self.d)
         self.assertIn("archived to .handoff-archive/", r.stdout)
         self.assertFalse((self.d / "HANDOFF.md").exists())
-        self.assertRegex(self.archived()[0].name, r"^HANDOFF-\d{4}-\d{2}-\d{2}-\d{4}\.md$")
+        self.assertRegex(self.archived()[0].name, r"^HANDOFF-\d{4}-\d{2}-\d{2}-\d{6}\.md$")
 
     def test_found_from_a_subdirectory(self):
         handoff(self.d, "false")

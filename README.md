@@ -3,7 +3,7 @@
 **Auto-compaction lets your agent decide what it remembers. A handoff lets you decide.**
 
 When a long agent session gets heavy, don't compact it. Type `/handoff`. The
-agent writes six lines of checked state: the goal, what is proven done, what
+agent writes a header and six lines of checked state: the goal, what is proven done, what
 already failed, the exact next step, the one open question, and a shell
 command that says when the task is finished. Then you start a fresh session
 that picks up from that file. Nothing gets lost in a summary, nothing gets
@@ -37,6 +37,9 @@ Done when: <one shell command; exit 0 = finished>
 ```
 
 The full rules live in [`skills/handoff/SKILL.md`](skills/handoff/SKILL.md).
+A project can keep its state in a tracked document instead (named in its
+AGENTS.md, e.g. `docs/decisions.md`). That document is kept current, never
+archived; the hook only handles `HANDOFF.md`.
 
 ## Install
 
@@ -53,9 +56,9 @@ HANDOFF.md
 ```bash
 git clone https://github.com/blazeboltmarketing/agent-handoff ~/agent-handoff
 # Codex, Cursor, Copilot, Gemini CLI, OpenCode, Amp, Goose:
-mkdir -p ~/.agents/skills && ln -s ~/agent-handoff/skills/handoff ~/.agents/skills/handoff
-# Claude Code (or use the plugin below):
-mkdir -p ~/.claude/skills && ln -s ~/agent-handoff/skills/handoff ~/.claude/skills/handoff
+mkdir -p ~/.agents/skills && ln -sfn ~/agent-handoff/skills/handoff ~/.agents/skills/handoff
+# Claude Code, unless you use the plugin below (it ships the skill too):
+mkdir -p ~/.claude/skills && ln -sfn ~/agent-handoff/skills/handoff ~/.claude/skills/handoff
 ```
 
 Then paste [`snippets/agents-md.md`](snippets/agents-md.md) into your
@@ -68,24 +71,33 @@ without a hook. Run it with `/handoff`, or `$handoff` in Codex.
 tells the new session to read `HANDOFF.md` first, and archives the file once
 its `Done when:` check passes.
 
-**Claude Code, as a plugin** (skill and hook together):
+For Claude Code pick ONE of the plugin or the by-hand setup; both together
+run the hook twice.
+
+**Claude Code, as a plugin** (skill and hook together; skip the
+`~/.claude/skills` link above):
 
 ```
 /plugin marketplace add blazeboltmarketing/agent-handoff
 /plugin install agent-handoff@agent-handoff
 ```
 
-**Claude Code, by hand**: add to `~/.claude/settings.json`:
+**Claude Code, by hand**: merge this into `~/.claude/settings.json`. If you
+already have `hooks` or `SessionStart`, add the entry to the existing array
+instead of replacing it:
 
 ```json
-"hooks": {
-  "SessionStart": [
-    { "hooks": [{ "type": "command", "command": "python3 ~/agent-handoff/hooks/handoff_hook.py", "timeout": 15 }] }
-  ]
+{
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "python3 ~/agent-handoff/hooks/handoff_hook.py", "timeout": 15 }] }
+    ]
+  }
 }
 ```
 
-**Codex**: add to `~/.codex/hooks.json`, then run `/hooks` once to trust it:
+**Codex**: merge the same way into `~/.codex/hooks.json`, then run `/hooks`
+once to trust it:
 
 ```json
 {
@@ -103,7 +115,8 @@ work the same way but are untested. A PR with a tested config is welcome.
 ### 3. Claude Code extra: a context meter
 
 [`extras/statusline.sh`](extras/statusline.sh) shows context used, and turns
-red with `→ /handoff` past 120k tokens (`HANDOFF_AT` to change it):
+red with `→ /handoff` past 120k tokens (`HANDOFF_AT` to change it). It
+replaces any statusline you already have:
 
 ```json
 "statusLine": { "type": "command", "command": "bash ~/agent-handoff/extras/statusline.sh" }

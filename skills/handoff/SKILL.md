@@ -17,7 +17,8 @@ it while there is headroom.
 ## Where the state goes
 
 1. If the project's AGENTS.md names a tracked state document (e.g.
-   `docs/decisions.md`), update its current-work section in place.
+   `docs/decisions.md`), update its current-work section in place. It is
+   kept current, never archived; leave out the `Done when:` line there.
 2. Otherwise `HANDOFF.md` at the repository root. Keep it out of git: add
    `HANDOFF.md` and `.handoff-archive/` to `.gitignore`. It is working state,
    and the session-start hook only runs the `Done when:` check on an
@@ -25,7 +26,7 @@ it while there is headroom.
 
 ## What it contains
 
-Six lines. Expand a line only where the next session would otherwise have to
+A header and six lines. Expand a line only where the next session would otherwise have to
 work something out again.
 
 ```
@@ -65,6 +66,6 @@ work is unfinished, so it must fail now.
 ## Next session
 
 Read `HANDOFF.md` first and do its next action. Once its `Done when:` check
-exits 0, move it to `.handoff-archive/HANDOFF-<YYYY-MM-DD-HHMM>.md` so the
+exits 0, move it to `.handoff-archive/HANDOFF-<YYYY-MM-DD-HHMMSS>.md` so the
 next handoff starts clean. The session-start hook in this repository does
 both automatically where it is installed.
