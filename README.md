@@ -1,28 +1,27 @@
 # agent-handoff
 
-**Compaction lets your agent decide what it forgets. A handoff lets you decide.**
+**Start a fresh agent session without losing your place.**
 
-When a long session gets heavy, type `/handoff` instead of letting it compact.
-The agent writes a header and six lines of checked state to `HANDOFF.md`: the
-goal, what is proven done, what already failed, the exact next step, the one
-open question, and a shell command that says when the task is finished. You
-start a fresh session, it reads the file and carries on. Nothing gets
-re-asked, and every turn after that is cheaper.
+Long agent sessions get slow, then they compact and forget things: the error
+you were fixing, the approach you already ruled out, what you decided. So you
+explain it all again.
+
+Type `/handoff` instead. The agent saves where you are to a short file: the
+goal, what's done, what didn't work, and the next step. Start a fresh session
+and it picks up right where you left off, without the re-explaining.
 
 Works with any agent that loads [Agent Skills](https://agentskills.io) or reads
 [AGENTS.md](https://agents.md). Tested on Claude Code 2.1.288 and Codex CLI 0.159.3.
 
 ## Why not compaction
 
-A compacted summary is the model summarizing itself in the middle of a task,
-and what drops out is what you need next: the exact error, the approach you
-already rejected, the decision from an hour ago. A handoff file is short
-enough to read and fix before you clear.
+Compaction is the agent summarizing itself, and you can't see what it left out.
+A handoff is a file you can read and fix before you start over, so you decide
+what carries over. A fresh session is also cheaper, because every turn
+re-reads the whole conversation.
 
-`Done when:` turns "finished" into a command instead of a feeling. Once it
-passes, the hook archives the file so the next handoff starts clean. And the
-fresh session re-reads a few hundred tokens of state on every turn, not 150k
-of history.
+The file ends with a `Done when:` check. Once the work passes it, the hook
+archives the file.
 
 ## The file
 
