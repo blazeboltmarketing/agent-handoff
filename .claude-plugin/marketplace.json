@@ -1,6 +1,7 @@
 {
   "name": "agent-handoff",
   "owner": { "name": "blazeboltmarketing" },
+  "description": "Deliberate session handoffs instead of auto-compaction.",
   "plugins": [
     {
       "name": "agent-handoff",

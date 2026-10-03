@@ -46,9 +46,10 @@ work is unfinished, so it must fail now.
 
 ## Steps
 
-1. Commit uncommitted work on the working branch. A preservation commit is
-   not permission to merge, push or deploy.
-2. Write the state file. If it is a tracked state document, commit it.
+1. Write the state file first, so it exists even if a later step fails.
+2. Commit uncommitted work on the working branch, and the state file too if
+   it is a tracked state document. A preservation commit is not permission
+   to merge, push or deploy. If a commit fails, say so in step 4.
 3. Print a starting prompt for the next session in one fenced block the user
    can paste: the state file to read first, the goal in one line, the pending
    next actions in order (mark anything irreversible "ask first"), and the
