@@ -1,18 +1,18 @@
 ---
 name: handoff
-description: User-invoked only. Run when the user types /handoff (Codex - $handoff) or explicitly asks for a handoff; never on your own initiative, never because the context is getting long. Saves the state the next session needs (goal, done, dead ends, next action, open question, a done-check) to HANDOFF.md, then tells the user to start a fresh session. A state file, never a transcript or a summary of the conversation.
+description: User-invoked only. Run when the user types /handoff ($handoff in Codex) or explicitly asks for a handoff, never on your own initiative and never because the context is long. Saves the state the next session needs (goal, done, dead ends, next action, open question, a done-check) to HANDOFF.md, then tells the user to start a fresh session. It is a state file, not a transcript or a summary of the conversation.
 license: MIT
 disable-model-invocation: true
 ---
 
-# /handoff — state to a file, then a fresh session
+# /handoff: save the state, start a fresh session
 
 Every turn re-reads the whole conversation, so a long session costs more per
-step and drifts. Auto-compaction "fixes" that with a summary the agent writes
-about itself, and the details that matter get lost. A handoff is the opposite:
-a few lines of checked state the user can read, edit and trust, and a clean
-session that starts from them. The handoff itself takes 10-15k tokens, so run
-it while there is headroom.
+step and drifts. Auto-compaction answers that with a summary the agent writes
+about itself, and the details that matter fall out of it. A handoff is a few
+lines of checked state the user can read and edit, plus a clean session that
+starts from them. Writing one takes 10-15k tokens, so do it while there is
+headroom.
 
 ## Where the state goes
 
@@ -26,8 +26,8 @@ it while there is headroom.
 
 ## What it contains
 
-A header and six lines. Expand a line only where the next session would otherwise have to
-work something out again.
+A header and six lines. Expand a line only where the next session would
+otherwise have to work something out again.
 
 ```
 # Handoff — <task> — <YYYY-MM-DD HH:MM>

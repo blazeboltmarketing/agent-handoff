@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
-"""Session-start hook for agent-handoff (Claude Code, Codex, any harness that
-pipes a JSON payload with `cwd` on stdin and adds plain stdout to context).
+"""Session-start hook for agent-handoff.
 
-- No HANDOFF.md at the repository root: silent.
-- HANDOFF.md whose `Done when:` check exits 0: moved to
-  .handoff-archive/HANDOFF-<YYYY-MM-DD-HHMMSS>.md, and one line says so.
-- Otherwise: one line telling the agent to read it first.
+Reads a JSON payload with `cwd` on stdin. If HANDOFF.md exists at the
+repository root, prints one line telling the agent to read it, or archives it
+to .handoff-archive/ once its `Done when:` command exits 0. That command runs
+only when HANDOFF.md is not tracked by git, so a cloned repository can never
+make your agent run a command it shipped. Any failure leaves the file in place.
 
-The `Done when:` command runs only when HANDOFF.md is NOT tracked by git, so a
-cloned repository can never make your agent run a command it shipped. Fail
-safe: no line, non-zero exit, timeout or error leaves the file in place.
-
-Env: HANDOFF_DISABLED=1 turns it off; HANDOFF_DONE_TIMEOUT (seconds, default 10).
-Standard library only.
+Env: HANDOFF_DISABLED=1 turns it off; HANDOFF_DONE_TIMEOUT sets the check
+timeout in seconds (default 10).
 """
 
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -41,7 +38,6 @@ def tracked(root, name):
 
 
 def done(path, root):
-    """True when the file's `Done when:` command exits 0 within the timeout."""
     with open(path, encoding="utf-8", errors="replace") as fh:
         m = re.search(r"^Done when:\s*(.+?)\s*$", fh.read(), re.M)
     if not m:
@@ -53,7 +49,7 @@ def done(path, root):
         try:
             return proc.wait(timeout=float(os.environ.get("HANDOFF_DONE_TIMEOUT", "10"))) == 0
         except subprocess.TimeoutExpired:
-            os.killpg(proc.pid, 9)
+            os.killpg(proc.pid, signal.SIGKILL)
             return False
     except (OSError, ValueError):
         return False

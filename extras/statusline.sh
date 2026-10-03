@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Claude Code statusline: context used/size, red with "→ /handoff" past HANDOFF_AT
-# tokens (default 120000). settings.json: "statusLine": {"type": "command",
-# "command": "bash /path/to/statusline.sh"}
+# Claude Code statusline: context used/size, red with "→ /handoff" past
+# HANDOFF_AT tokens (default 120000).
 python3 -c '
 import json, os, sys
 d = json.load(sys.stdin)
